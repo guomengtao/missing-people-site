@@ -1,0 +1,49 @@
+
+    <div style="max-width: 1000px; margin: 20px auto; font-family: sans-serif; padding: 0 20px;">
+        <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff;">
+            <a href="/" style="color: #fff; text-decoration: none;">首页 {{ len .Site.RegularPages }}</a>
+            
+            {{ if .Parent.Parent.Parent }}
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
+                    {{ .Parent.Parent.Parent.Title }} {{ len .Parent.Parent.Parent.RegularPagesRecursive }}
+                </a>
+            {{ end }}
+
+            {{ if .Parent.Parent }}
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
+                    {{ .Parent.Parent.Title }} {{ len .Parent.Parent.RegularPagesRecursive }}
+                </a>
+            {{ end }}
+
+            {{ if .Parent }}
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
+                    {{ .Parent.Title }} {{ len .Parent.RegularPagesRecursive }}
+                </a>
+            {{ end }}
+
+            <span style="margin: 0 8px; color: #666;">&raquo;</span>
+            <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+        </nav>
+
+        <h1 style="border-bottom: 4px solid #d63031; padding-bottom: 12px;">{{ .Title }}</h1>
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; margin: 30px 0;">
+            {{ range .Params.images }}
+            <img src="{{ . }}" style="width: 260px; height: 320px; object-fit: cover; border-radius: 8px;">
+            {{ end }}
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            {{ range $k, $v := .Params.metadata }}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px; background: #f9f9f9; font-weight: bold; width: 30%;">{{ replace $k "_" " " | humanize }}</td>
+                <td style="padding: 10px;">{{ $v }}</td>
+            </tr>
+            {{ end }}
+        </table>
+        <div style="line-height: 1.8; background: #fffdf0; padding: 25px; border-radius: 8px;">
+            {{ .Content }}
+        </div>
+    </div>
+    

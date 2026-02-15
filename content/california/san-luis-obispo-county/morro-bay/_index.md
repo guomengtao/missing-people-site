@@ -1,0 +1,3 @@
+---
+title: "Morro Bay"
+---

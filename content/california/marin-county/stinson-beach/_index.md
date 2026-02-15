@@ -1,0 +1,3 @@
+---
+title: "Stinson Beach"
+---

@@ -1,0 +1,3 @@
+---
+title: "Depoe Bay"
+---

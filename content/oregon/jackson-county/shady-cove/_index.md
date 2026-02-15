@@ -1,0 +1,3 @@
+---
+title: "Shady Cove"
+---
