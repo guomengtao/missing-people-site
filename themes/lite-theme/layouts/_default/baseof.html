@@ -1,0 +1,22 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>{{ .Title }}</title>
+        <style>
+            body { font-family: sans-serif; margin: 0; background: #f4f4f4; }
+            header { background: #d63031; color: white; padding: 20px; text-align: center; }
+            .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+            footer { background: #333; color: white; text-align: center; padding: 20px; margin-top: 40px; }
+        </style>
+    </head>
+    <body>
+        <header><h1>🔍 MISSING PERSONS DATABASE</h1></header>
+        <main>
+            {{- block "main" . -}}{{- end -}}
+        </main>
+        <footer>&copy; 2026 Public Research Project</footer>
+    </body>
+    </html>
+    
