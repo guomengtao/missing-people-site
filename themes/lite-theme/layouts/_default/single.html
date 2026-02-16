@@ -1,33 +1,31 @@
 
     <div style="max-width: 1000px; margin: 20px auto; font-family: sans-serif; padding: 0 20px;">
-        <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff;">
-            <a href="/" style="color: #fff; text-decoration: none;">Home {{ len .Site.RegularPages }}</a>
+        <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff; overflow-x: auto; white-space: nowrap;">
+            <a href="/" style="color: #fff; text-decoration: none;">Home 552</a>
             
-            {{ if and .Parent .Parent.Parent .Parent.Parent.Parent }}
+            {{ if and .Parent .Parent.Parent .Parent.Parent.Parent .Parent.Parent.Parent.Parent }}
+                <!-- 案件页面（有城市层级） -->
                 <span style="margin: 0 8px; color: #666;">&raquo;</span>
-                <a href="{{ .Parent.Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
-                    {{ .Parent.Parent.Parent.Title }} {{ len .Parent.Parent.Parent.RegularPagesRecursive }}
-                </a>
-            {{ end }}
-
-            {{ if and .Parent .Parent.Parent }}
+                <a href="{{ .Parent.Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Parent.Parent.Title }} {{ len .Parent.Parent.Parent.RegularPagesRecursive }}</a>
                 <span style="margin: 0 8px; color: #666;">&raquo;</span>
-                <a href="{{ .Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
-                    {{ .Parent.Parent.Title }} {{ len .Parent.Parent.RegularPagesRecursive }}
-                </a>
-            {{ end }}
-
-            {{ if .Parent }}
+                <a href="{{ .Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Parent.Title }} {{ len .Parent.Parent.RegularPagesRecursive }}</a>
                 <span style="margin: 0 8px; color: #666;">&raquo;</span>
-                <a href="{{ .Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
-                    {{ .Parent.Title }} {{ len .Parent.RegularPagesRecursive }}
-                </a>
-            {{ end }}
-
-            {{ if not .Parent }}
+                <a href="{{ .Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Title }} {{ len .Parent.RegularPagesRecursive }}</a>
                 <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+            {{ else if and .Parent .Parent.Parent .Parent.Parent.Parent }}
+                <!-- 案件页面（无城市层级） -->
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Parent.Title }} {{ len .Parent.Parent.RegularPagesRecursive }}</a>
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Title }} {{ len .Parent.RegularPagesRecursive }}</a>
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+            {{ else }}
+                <!-- 其他页面 -->
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
             {{ end }}
-            <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
         </nav>
 
         <h1 style="border-bottom: 4px solid #d63031; padding-bottom: 12px;">{{ .Title }}</h1>
@@ -47,4 +45,26 @@
         <div style="line-height: 1.8; background: #fffdf0; padding: 25px; border-radius: 8px;">
             {{ .Content }}
         </div>
+        
+        <footer style="margin-top: 60px; padding: 30px; background: #222; color: #fff; border-radius: 10px;">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <h3 style="margin-top: 0; margin-bottom: 20px;">XML Sitemap</h3>
+                <p style="margin-bottom: 20px;">For better SEO and indexing, you can access our XML sitemap files:</p>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 10px;">
+                        <a href="/sitemap.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                            Main Sitemap
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 10px;">
+                        <a href="/posts.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                            Posts Sitemap
+                        </a>
+                    </li>
+                </ul>
+                <p style="margin-top: 30px; font-size: 0.9rem; color: #888;">
+                    © {{ now.Format "2006" }} Missing Persons Database
+                </p>
+            </div>
+        </footer>
     </div>

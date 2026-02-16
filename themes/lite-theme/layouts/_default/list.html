@@ -1,40 +1,176 @@
 
-    {{ define "main" }}
-    <div class="container" style="padding: 30px 20px; font-family: sans-serif;">
-        <nav style="margin-bottom: 25px; font-size: 0.9rem; background: #fff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <a href="/" style="color: #d63031; text-decoration: none; font-weight: bold;">Home</a>
-            {{ if .Parent }}{{ if not .Parent.IsHome }}
-                <span style="margin: 0 8px; color: #ccc;">/</span>
-                <a href="{{ .Parent.RelPermalink }}" style="color: #0984e3; text-decoration: none;">{{ .Parent.Title }}</a>
-            {{ end }}{{ end }}
-            <span style="margin: 0 8px; color: #ccc;">/</span>
-            <span style="color: #2d3436; font-weight: bold;">{{ .Title }}</span>
+    <div style="max-width: 1000px; margin: 20px auto; font-family: sans-serif; padding: 0 20px;">
+        <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff; overflow-x: auto; white-space: nowrap;">
+            <a href="/" style="color: #fff; text-decoration: none;">Home 552</a>
+            {{ if and .Parent (not .Parent.Parent) }}
+                <!-- 州页面 -->
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+            {{ else if and .Parent .Parent.Parent (not .Parent.Parent.Parent) }}
+                <!-- 县页面 -->
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Title }} {{ len .Parent.RegularPagesRecursive }}</a>
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+            {{ else if and .Parent .Parent.Parent .Parent.Parent.Parent }}
+                <!-- 城市页面 -->
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Parent.Title }} {{ len .Parent.Parent.RegularPagesRecursive }}</a>
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <a href="{{ .Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">{{ .Parent.Title }} {{ len .Parent.RegularPagesRecursive }}</a>
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+                <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+            {{ else }}
+                <!-- 其他页面 -->
+                <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+            {{ end }}
         </nav>
-        <h1 style="border-left: 6px solid #d63031; padding-left: 15px; margin-bottom: 35px;">{{ .Title }} ({{ len .RegularPagesRecursive }})</h1>
+
+        <h1 style="border-bottom: 4px solid #d63031; padding-bottom: 12px;">{{ .Title }} ({{ len .RegularPagesRecursive }} cases)</h1>
         
-        {{ $subPages := .RegularPagesRecursive }}{{ $localImgs := where $subPages "Params.images" "!=" nil }}
-        {{ if $localImgs }}
-        <section style="background: #f1f2f6; padding: 25px; border-radius: 15px; margin-bottom: 40px;">
-            <h3 style="margin-top: 0;">📸 Featured in {{ .Title }}</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
-                {{ range first 4 (sort $localImgs "Params.images" "desc") }}
-                <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
-                    {{ with index .Params.images 0 }}<img src="{{ . }}" style="width: 100%; height: 160px; object-fit: cover;">{{ end }}
-                    <div style="padding: 10px; font-weight: bold; font-size: 0.9rem;">{{ .Title }}</div>
+        {{ $cases := .RegularPagesRecursive }}
+        {{ $casesWithImages := where $cases "Params.images" "!=" nil }}
+        {{ $casesWithoutImages := where $cases "Params.images" "==" nil }}
+        
+        {{ $top3Cases := slice }}
+        {{ range $case := $casesWithImages }}
+            {{ $top3Cases = $top3Cases | append $case }}
+        {{ end }}
+        
+        {{ $sortedCases := slice }}
+        {{ $tempCases := $top3Cases }}
+        {{ range seq 100 }}
+            {{ if eq (len $tempCases) 0 }}
+                {{ break }}
+            {{ end }}
+            {{ $maxImages := 0 }}
+            {{ $maxCase := index $tempCases 0 }}
+            {{ range $case := $tempCases }}
+                {{ $currentImages := len $case.Params.images }}
+                {{ if gt $currentImages $maxImages }}
+                    {{ $maxImages = $currentImages }}
+                    {{ $maxCase = $case }}
+                {{ end }}
+            {{ end }}
+            {{ $sortedCases = $sortedCases | append $maxCase }}
+            {{ $newTempCases := slice }}
+            {{ range $case := $tempCases }}
+                {{ if ne $case $maxCase }}
+                    {{ $newTempCases = $newTempCases | append $case }}
+                {{ end }}
+            {{ end }}
+            {{ $tempCases = $newTempCases }}
+        {{ end }}
+        
+        {{ $top3Cases = first 3 $sortedCases }}
+        
+        {{ if $top3Cases }}
+        <section style="margin: 30px 0;">
+            <h2 style="color: #2d3436; margin-bottom: 20px;">Top 3 Cases with Most Photos</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;">
+                {{ range $top3Cases }}
+                <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.1);">
+                    {{ with index .Params.images 0 }}
+                    <img src="{{ . }}" style="width: 100%; height: 220px; object-fit: cover;">
+                    {{ end }}
+                    <div style="padding: 18px;">
+                        <div style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">{{ .Title }}</div>
+                        <div style="font-size: 0.9rem; color: #666; display: flex; justify-content: space-between;">
+                            <span style="font-weight: bold; color: #d63031;">{{ len .Params.images }} photos</span>
+                            {{ with .Params.metadata.city }}
+                            <span>{{ . }}</span>
+                            {{ end }}
+                        </div>
+                    </div>
                 </a>
                 {{ end }}
             </div>
         </section>
         {{ end }}
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
-            {{ range .Pages }}
-            <a href="{{ .RelPermalink }}" style="padding: 15px; background: white; border: 1px solid #eee; border-radius: 10px; text-decoration: none; color: #2d3436; display: flex; justify-content: space-between;">
-                <span>{{ .Title }}</span>
-                {{ if .IsSection }}<span style="background: #dfe6e9; color: #2d3436; font-size: 0.75rem; font-weight: bold; padding: 2px 8px; border-radius: 10px;">{{ len .RegularPagesRecursive }}</span>{{ end }}
-            </a>
+        
+        {{ if $casesWithoutImages }}
+        <section style="margin: 30px 0;">
+            <h2 style="color: #2d3436; margin-bottom: 20px;">Cases without Photos</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                {{ range $casesWithoutImages }}
+                <a href="{{ .RelPermalink }}" style="padding: 15px; background: white; border: 1px solid #eee; border-radius: 10px; text-decoration: none; color: #2d3436;">
+                    <div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 5px;">{{ .Title }}</div>
+                    {{ with .Params.metadata.city }}
+                    <div style="font-size: 0.8rem; color: #666;">{{ . }}</div>
+                    {{ end }}
+                </a>
+                {{ end }}
+            </div>
+        </section>
+        {{ end }}
+        
+        {{ $nonEmptySections := slice }}
+        {{ range .Pages }}
+            {{ if and .IsSection (gt (len .RegularPagesRecursive) 0) }}
+                {{ $nonEmptySections = $nonEmptySections | append . }}
             {{ end }}
-        </div>
+        {{ end }}
+        
+        {{ if $nonEmptySections }}
+        <section style="margin: 30px 0;">
+            <h2 style="color: #2d3436; margin-bottom: 20px;">Sub Locations</h2>
+            
+            {{ $sortedSections := slice }}
+            {{ $tempSections := $nonEmptySections }}
+            {{ range seq 100 }}
+                {{ if eq (len $tempSections) 0 }}
+                    {{ break }}
+                {{ end }}
+                {{ $maxCases := 0 }}
+                {{ $maxSection := index $tempSections 0 }}
+                {{ range $section := $tempSections }}
+                    {{ $currentCases := len $section.RegularPagesRecursive }}
+                    {{ if gt $currentCases $maxCases }}
+                        {{ $maxCases = $currentCases }}
+                        {{ $maxSection = $section }}
+                    {{ end }}
+                {{ end }}
+                {{ $sortedSections = $sortedSections | append $maxSection }}
+                {{ $newTempSections := slice }}
+                {{ range $section := $tempSections }}
+                    {{ if ne $section $maxSection }}
+                        {{ $newTempSections = $newTempSections | append $section }}
+                    {{ end }}
+                {{ end }}
+                {{ $tempSections = $newTempSections }}
+            {{ end }}
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                {{ range $sortedSections }}
+                <a href="{{ .RelPermalink }}" style="padding: 15px; background: white; border: 1px solid #eee; border-radius: 10px; text-decoration: none; color: #2d3436; display: flex; justify-content: space-between;">
+                    <span>{{ .Title }}</span>
+                    <span style="background: #dfe6e9; color: #2d3436; font-size: 0.75rem; font-weight: bold; padding: 2px 8px; border-radius: 10px;">{{ len .RegularPagesRecursive }}</span>
+                </a>
+                {{ end }}
+            </div>
+        </section>
+        {{ end }}
+        
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "{{ .Title }} Missing Persons Cases",
+            "description": "List of missing persons cases in {{ .Title }} with {{ len .RegularPagesRecursive }} cases.",
+            "url": "{{ .Permalink }}",
+            "mainEntity": {
+                "@type": "ItemList",
+                "itemListElement": [
+                    {{ range $index, $case := .RegularPagesRecursive }}
+                    {
+                        "@type": "ListItem",
+                        "position": {{ add $index 1 }},
+                        "name": "{{ $case.Title }}",
+                        "url": "{{ $case.Permalink }}"
+                    }{{ if not (eq $index (sub (len .RegularPagesRecursive) 1)) }},{{ end }}
+                    {{ end }}
+                ]
+            }
+        }
+        </script>
     </div>
-    {{ end }}
-    

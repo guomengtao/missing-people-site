@@ -25,7 +25,31 @@
         <h2>📝 Deep Dive Reports</h2>
         <div class="grid">
             {{ $allPages := where .Site.AllPages "Kind" "page" }}
-            {{ range first 4 (sort $allPages "Content" "desc") }}
+            {{ $sortedPages := slice }}
+            {{ $tempPages := $allPages }}
+            {{ range seq 100 }}
+                {{ if eq (len $tempPages) 0 }}
+                    {{ break }}
+                {{ end }}
+                {{ $maxLength := 0 }}
+                {{ $maxPage := index $tempPages 0 }}
+                {{ range $page := $tempPages }}
+                    {{ $currentLength := len $page.Content }}
+                    {{ if gt $currentLength $maxLength }}
+                        {{ $maxLength = $currentLength }}
+                        {{ $maxPage = $page }}
+                    {{ end }}
+                {{ end }}
+                {{ $sortedPages = $sortedPages | append $maxPage }}
+                {{ $newTempPages := slice }}
+                {{ range $page := $tempPages }}
+                    {{ if ne $page $maxPage }}
+                        {{ $newTempPages = $newTempPages | append $page }}
+                    {{ end }}
+                {{ end }}
+                {{ $tempPages = $newTempPages }}
+            {{ end }}
+            {{ range first 4 $sortedPages }}
             <a href="{{ .RelPermalink }}" class="card">
                 <span class="badge badge-text">📝 {{ len .Content }} Characters</span>
                 <h3 style="margin: 0 0 10px 0;">{{ .Title }}</h3>
@@ -51,19 +75,70 @@
         </div>
 
         <h2>🗺️ Browse by State</h2>
-        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));">
-            {{ range .Site.Home.Sections.ByTitle }}
-            <a href="{{ .RelPermalink }}" class="state-link">{{ .Title }}</a>
+        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+            {{ $states := .Site.Home.Sections }}
+            {{ $nonEmptyStates := slice }}
+            {{ range $states }}
+                {{ if gt (len .RegularPagesRecursive) 0 }}
+                    {{ $nonEmptyStates = $nonEmptyStates | append . }}
+                {{ end }}
+            {{ end }}
+            
+            {{ $sortedStates := slice }}
+            {{ $tempStates := $nonEmptyStates }}
+            {{ range seq 100 }}
+                {{ if eq (len $tempStates) 0 }}
+                    {{ break }}
+                {{ end }}
+                {{ $maxCases := 0 }}
+                {{ $maxState := index $tempStates 0 }}
+                {{ range $state := $tempStates }}
+                    {{ $currentCases := len $state.RegularPagesRecursive }}
+                    {{ if gt $currentCases $maxCases }}
+                        {{ $maxCases = $currentCases }}
+                        {{ $maxState = $state }}
+                    {{ end }}
+                {{ end }}
+                {{ $sortedStates = $sortedStates | append $maxState }}
+                {{ $newTempStates := slice }}
+                {{ range $state := $tempStates }}
+                    {{ if ne $state $maxState }}
+                        {{ $newTempStates = $newTempStates | append $state }}
+                    {{ end }}
+                {{ end }}
+                {{ $tempStates = $newTempStates }}
+            {{ end }}
+            
+            {{ range $sortedStates }}
+            <a href="{{ .RelPermalink }}" class="state-link">
+                {{ .Title }} <span style="font-size: 0.8rem; color: #666;">({{ len .RegularPagesRecursive }})</span>
+            </a>
             {{ end }}
         </div>
 
-        <div style="text-align: center; margin-top: 60px; padding: 40px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h2 style="color: #d63031; margin-top: 0;">📸 Most Images Case</h2>
-            <a href="/most-images-case/" style="display: inline-block; margin-top: 20px; padding: 15px 30px; background: #d63031; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s;">
-                View Madison Re'Nea Allen Case
-            </a>
-            <p style="color: #666; margin-top: 15px; font-size: 1.1rem;">16 Photos • Louisiana</p>
-        </div>
+
+        
+        <footer style="margin-top: 60px; padding: 30px; background: #222; color: #fff; border-radius: 10px;">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <h3 style="margin-top: 0; margin-bottom: 20px;">XML Sitemap</h3>
+                <p style="margin-bottom: 20px;">For better SEO and indexing, you can access our XML sitemap files:</p>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 10px;">
+                        <a href="/sitemap.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                            Main Sitemap
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 10px;">
+                        <a href="/posts.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                            Posts Sitemap
+                        </a>
+                    </li>
+                </ul>
+                <p style="margin-top: 30px; font-size: 0.9rem; color: #888;">
+                    © {{ now.Format "2006" }} Missing Persons Database
+                </p>
+            </div>
+        </footer>
     </div>
 </body>
 </html>

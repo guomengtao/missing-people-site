@@ -4,4 +4,4 @@ hugo 项目默认免费美国人,采用美式英文写网页所有代码.
 增加xml文件,在每个页面底部链接,增加seo收录
 案件详情页等增加json-ld 规范,便于seo收录
 每个页面的seo设置,包括title,description,keywords,og:title,og:description,og:image,twitter:title,twitter:description,twitter:image等
-
+代码的注释采用美式英文编写
