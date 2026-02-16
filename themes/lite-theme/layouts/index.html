@@ -5,16 +5,17 @@
     <meta charset="UTF-8">
     <title>Missing Persons Database</title>
     <style>
-        body { font-family: sans-serif; margin: 0; background: #f8f9fa; color: #333; }
+        body { font-family: -apple-system, sans-serif; margin: 0; background: #f8f9fa; color: #333; }
         header { background: #d63031; color: white; padding: 30px; text-align: center; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; color: inherit; border-top: 5px solid #d63031; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; color: inherit; border-top: 5px solid #d63031; display: block; }
         .card-img { border-top-color: #0984e3; }
         .badge { font-size: 0.8rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
         .badge-text { background: #ffeaa7; color: #d35400; }
         .badge-img { background: #0984e3; color: white; }
-        .state-link { background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; text-align: center; font-weight: bold; text-decoration: none; color: #333; }
+        .state-link { background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; text-align: center; font-weight: bold; text-decoration: none; color: #333; transition: 0.2s; }
+        .state-link:hover { border-color: #d63031; color: #d63031; }
     </style>
 </head>
 <body>
@@ -23,23 +24,26 @@
     <div class="container">
         <h2>📝 Deep Dive Reports</h2>
         <div class="grid">
-            {{ range first 4 (sort (where .Site.Pages "Kind" "page") "Content" "desc") }}
+            {{ $allPages := where .Site.AllPages "Kind" "page" }}
+            {{ range first 4 (sort $allPages "Content" "desc") }}
             <a href="{{ .RelPermalink }}" class="card">
                 <span class="badge badge-text">📝 {{ len .Content }} Characters</span>
-                <h3 style="margin:0;">{{ .Title }}</h3>
-                <p style="color: #666; font-size: 0.9rem;">{{ .Summary | truncate 100 }}</p>
+                <h3 style="margin: 0 0 10px 0;">{{ .Title }}</h3>
+                <p style="color: #666; font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                    {{ .Summary | plainify | truncate 120 }}
+                </p>
             </a>
             {{ end }}
         </div>
 
         <h2>📸 Visual Identity</h2>
         <div class="grid">
-            {{ $imgPages := where (where .Site.Pages "Kind" "page") "Params.images" "!=" nil }}
+            {{ $imgPages := where $allPages "Params.images" "!=" nil }}
             {{ range first 4 (sort $imgPages "Params.images" "desc") }}
             <a href="{{ .RelPermalink }}" class="card card-img">
                 <span class="badge badge-img">📸 {{ len .Params.images }} Photos</span>
                 {{ if .Params.images }}
-                <img src="{{ index .Params.images 0 }}" style="width:100%; height:180px; object-fit:cover; border-radius:5px;">
+                <img src="{{ index .Params.images 0 }}" style="width:100%; height:180px; object-fit:cover; border-radius:5px; margin-top:10px;">
                 {{ end }}
                 <h3 style="margin:10px 0 0 0;">{{ .Title }}</h3>
             </a>
@@ -48,7 +52,7 @@
 
         <h2>🗺️ Browse by State</h2>
         <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));">
-            {{ range .Site.Home.Sections }}
+            {{ range .Site.Home.Sections.ByTitle }}
             <a href="{{ .RelPermalink }}" class="state-link">{{ .Title }}</a>
             {{ end }}
         </div>
