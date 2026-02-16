@@ -1,42 +1,58 @@
 
-    {{ define "main" }}
-    <div class="container" style="padding: 40px 20px; font-family: -apple-system, sans-serif;">
-        
-        <h2 style="border-left: 6px solid #d63031; padding-left: 15px; margin-bottom: 25px; color: #2d3436;">Deep Dive Reports</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 60px;">
-            {{/* 直接过滤全站 Page，不考虑 Section */}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Missing Persons Database</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background: #f8f9fa; color: #333; }
+        header { background: #d63031; color: white; padding: 30px; text-align: center; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-decoration: none; color: inherit; border-top: 5px solid #d63031; }
+        .card-img { border-top-color: #0984e3; }
+        .badge { font-size: 0.8rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
+        .badge-text { background: #ffeaa7; color: #d35400; }
+        .badge-img { background: #0984e3; color: white; }
+        .state-link { background: white; padding: 15px; border: 1px solid #ddd; border-radius: 5px; text-align: center; font-weight: bold; text-decoration: none; color: #333; }
+    </style>
+</head>
+<body>
+    <header><h1>🔍 MISSING PERSONS DATABASE</h1></header>
+    
+    <div class="container">
+        <h2>📝 Deep Dive Reports</h2>
+        <div class="grid">
             {{ range first 4 (sort (where .Site.Pages "Kind" "page") "Content" "desc") }}
-            <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 5px solid #d63031;">
-                <div style="color: #e67e22; font-weight: bold; font-size: 0.85rem; margin-bottom: 10px;">📝 {{ len .Content }} Characters</div>
-                <h3 style="margin: 0 0 10px 0; font-size: 1.2rem; line-height: 1.4;">{{ .Title }}</h3>
-                <p style="font-size: 0.9rem; color: #636e72; line-height: 1.6;">{{ .Summary | truncate 120 }}</p>
+            <a href="{{ .RelPermalink }}" class="card">
+                <span class="badge badge-text">📝 {{ len .Content }} Characters</span>
+                <h3 style="margin:0;">{{ .Title }}</h3>
+                <p style="color: #666; font-size: 0.9rem;">{{ .Summary | truncate 100 }}</p>
             </a>
             {{ end }}
         </div>
 
-        <h2 style="border-left: 6px solid #0984e3; padding-left: 15px; margin-bottom: 25px; color: #2d3436;">Visual Identity Cases</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 60px;">
-            {{ $allPages := where .Site.Pages "Kind" "page" }}
-            {{ $imgPages := where $allPages "Params.images" "!=" nil }}
+        <h2>📸 Visual Identity</h2>
+        <div class="grid">
+            {{ $imgPages := where (where .Site.Pages "Kind" "page") "Params.images" "!=" nil }}
             {{ range first 4 (sort $imgPages "Params.images" "desc") }}
-            <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 5px solid #0984e3;">
-                <div style="background: #0984e3; color: white; padding: 8px 15px; font-size: 0.8rem; font-weight: bold;">📸 {{ len .Params.images }} Identification Photos</div>
+            <a href="{{ .RelPermalink }}" class="card card-img">
+                <span class="badge badge-img">📸 {{ len .Params.images }} Photos</span>
                 {{ if .Params.images }}
-                <img src="{{ index .Params.images 0 }}" style="width: 100%; height: 240px; object-fit: cover; display: block;">
+                <img src="{{ index .Params.images 0 }}" style="width:100%; height:180px; object-fit:cover; border-radius:5px;">
                 {{ end }}
-                <div style="padding: 20px;"><h3 style="margin: 0; font-size: 1.15rem;">{{ .Title }}</h3></div>
+                <h3 style="margin:10px 0 0 0;">{{ .Title }}</h3>
             </a>
             {{ end }}
         </div>
 
-        <h2 style="border-left: 6px solid #2d3436; padding-left: 15px; margin-bottom: 25px; color: #2d3436;">Browse by State</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;">
-            {{ range .Site.Home.Sections.ByTitle }}
-            <a href="{{ .RelPermalink }}" style="padding: 15px; background: #fff; border: 1px solid #eee; border-radius: 8px; text-decoration: none; color: #2d3436; text-align: center; font-weight: bold; font-size: 0.95rem;">
-                {{ .Title }}
-            </a>
+        <h2>🗺️ Browse by State</h2>
+        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));">
+            {{ range .Site.Home.Sections }}
+            <a href="{{ .RelPermalink }}" class="state-link">{{ .Title }}</a>
             {{ end }}
         </div>
     </div>
-    {{ end }}
+</body>
+</html>
     
