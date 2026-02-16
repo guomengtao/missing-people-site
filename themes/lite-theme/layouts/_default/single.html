@@ -1,16 +1,16 @@
 
     <div style="max-width: 1000px; margin: 20px auto; font-family: sans-serif; padding: 0 20px;">
         <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff;">
-            <a href="/" style="color: #fff; text-decoration: none;">首页 {{ len .Site.RegularPages }}</a>
+            <a href="/" style="color: #fff; text-decoration: none;">Home {{ len .Site.RegularPages }}</a>
             
-            {{ if .Parent.Parent.Parent }}
+            {{ if and .Parent .Parent.Parent .Parent.Parent.Parent }}
                 <span style="margin: 0 8px; color: #666;">&raquo;</span>
                 <a href="{{ .Parent.Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
                     {{ .Parent.Parent.Parent.Title }} {{ len .Parent.Parent.Parent.RegularPagesRecursive }}
                 </a>
             {{ end }}
 
-            {{ if .Parent.Parent }}
+            {{ if and .Parent .Parent.Parent }}
                 <span style="margin: 0 8px; color: #666;">&raquo;</span>
                 <a href="{{ .Parent.Parent.RelPermalink }}" style="color: #fff; text-decoration: none;">
                     {{ .Parent.Parent.Title }} {{ len .Parent.Parent.RegularPagesRecursive }}
@@ -24,7 +24,9 @@
                 </a>
             {{ end }}
 
-            <span style="margin: 0 8px; color: #666;">&raquo;</span>
+            {{ if not .Parent }}
+                <span style="margin: 0 8px; color: #666;">&raquo;</span>
+            {{ end }}
             <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
         </nav>
 
@@ -46,4 +48,3 @@
             {{ .Content }}
         </div>
     </div>
-    
