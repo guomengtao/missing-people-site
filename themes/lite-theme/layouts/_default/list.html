@@ -28,6 +28,14 @@
 
         <h1 style="border-bottom: 4px solid #d63031; padding-bottom: 12px;">{{ .Title }} ({{ len .RegularPagesRecursive }} cases)</h1>
         
+        {{ if and .Parent .Parent.Parent }}
+        <!-- County-level Summary -->
+        <p style="margin-bottom: 30px; color: #666; line-height: 1.6;">
+            There are currently {{ len .RegularPagesRecursive }} active missing person cases in {{ .Title }}.
+            Our database provides public records and deep-dive reports for each case.
+        </p>
+        {{ end }}
+        
         {{ $cases := .RegularPagesRecursive }}
         {{ $casesWithImages := where $cases "Params.images" "!=" nil }}
         {{ $casesWithoutImages := where $cases "Params.images" "==" nil }}
@@ -149,6 +157,26 @@
                 {{ end }}
             </div>
         </section>
+        {{ end }}
+        
+        {{ if and .Parent .Parent.Parent }}
+        <!-- Nearby Counties -->
+        {{ $currentState := .Parent }}
+        {{ $nearbyCounties := where $currentState.Pages "Kind" "section" }}
+        {{ $nearbyCounties := where $nearbyCounties "RelPermalink" "!=" .RelPermalink }}
+        {{ if gt (len $nearbyCounties) 0 }}
+        <section style="margin: 40px 0;">
+            <h2 style="color: #2d3436; margin-bottom: 20px;">Nearby Counties</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                {{ range $nearbyCounties }}
+                <a href="{{ .RelPermalink }}" style="padding: 15px; background: white; border: 1px solid #eee; border-radius: 10px; text-decoration: none; color: #2d3436; display: flex; justify-content: space-between;">
+                    <span>{{ .Title }}</span>
+                    <span style="background: #dfe6e9; color: #2d3436; font-size: 0.75rem; font-weight: bold; padding: 2px 8px; border-radius: 10px;">{{ len .RegularPagesRecursive }}</span>
+                </a>
+                {{ end }}
+            </div>
+        </section>
+        {{ end }}
         {{ end }}
         
         <script type="application/ld+json">

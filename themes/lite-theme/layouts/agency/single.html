@@ -1,0 +1,66 @@
+<div style="max-width: 1000px; margin: 20px auto; font-family: sans-serif; padding: 0 20px;">
+    <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff; overflow-x: auto; white-space: nowrap;">
+        <a href="/" style="color: #fff; text-decoration: none;">Home 552</a>
+        <span style="margin: 0 8px; color: #666;">&raquo;</span>
+        <a href="/agency/" style="color: #fff; text-decoration: none;">Missing Persons by Agency</a>
+        <span style="margin: 0 8px; color: #666;">&raquo;</span>
+        <span style="color: #ff7675; font-weight: bold;">{{ .Title }}</span>
+    </nav>
+
+    <h1 style="border-bottom: 4px solid #d63031; padding-bottom: 12px;">Missing Persons Cases Investigated by {{ .Title }}</h1>
+    
+    {{ $allCases := where .Site.AllPages "Kind" "page" }}
+    {{ $agencyCases := where $allCases "Params.metadata.investigating_agency" "==" .Title }}
+    
+    <p style="margin-bottom: 30px; color: #666;">Total cases investigated by {{ .Title }}: <strong>{{ len $agencyCases }}</strong></p>
+    
+    {{ if gt (len $agencyCases) 0 }}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+        {{ range $agencyCases }}
+        <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+            {{ with index .Params.images 0 }}
+            <img src="{{ . }}" style="width: 100%; height: 200px; object-fit: cover;">
+            {{ end }}
+            <div style="padding: 15px;">
+                <div style="font-weight: bold; font-size: 1rem; margin-bottom: 8px;">{{ .Title }}</div>
+                <div style="font-size: 0.85rem; color: #666; display: flex; justify-content: space-between;">
+                    {{ with .Params.metadata.missing_since }}
+                    <span>Missing since: {{ . }}</span>
+                    {{ end }}
+                    {{ with .Params.metadata.city }}
+                    <span>{{ . }}</span>
+                    {{ end }}
+                </div>
+            </div>
+        </a>
+        {{ end }}
+    </div>
+    {{ else }}
+    <div style="text-align: center; padding: 60px 20px; color: #666;">
+        <h3>No cases found for {{ .Title }}</h3>
+        <p>There are no missing persons cases investigated by {{ .Title }} in our database.</p>
+    </div>
+    {{ end }}
+    
+    <footer style="margin-top: 60px; padding: 30px; background: #222; color: #fff; border-radius: 10px;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h3 style="margin-top: 0; margin-bottom: 20px;">XML Sitemap</h3>
+            <p style="margin-bottom: 20px;">For better SEO and indexing, you can access our XML sitemap files:</p>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 10px;">
+                    <a href="/sitemap.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                        Main Sitemap
+                    </a>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <a href="/posts.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                        Posts Sitemap
+                    </a>
+                </li>
+            </ul>
+            <p style="margin-top: 30px; font-size: 0.9rem; color: #888;">
+                © {{ now.Format "2006" }} Missing Persons Database
+            </p>
+        </div>
+    </footer>
+</div>

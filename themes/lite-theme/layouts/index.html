@@ -19,9 +19,57 @@
     </style>
 </head>
 <body>
-    <header><h1>🔍 MISSING PERSONS DATABASE</h1></header>
+    <header>
+        <h1>🔍 MISSING PERSONS DATABASE</h1>
+        <nav style="margin-top: 20px; font-size: 0.95rem; display: flex; justify-content: center; flex-wrap: wrap; gap: 15px;">
+            <a href="/year/" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; transition: 0.3s;">By Year</a>
+            <a href="/category/" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; transition: 0.3s;">By Category</a>
+            <a href="/agency/" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; transition: 0.3s;">By Agency</a>
+            <a href="/cold-cases/" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; transition: 0.3s;">Cold Cases</a>
+            <a href="/statistics/" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; transition: 0.3s;">Statistics</a>
+        </nav>
+    </header>
     
     <div class="container">
+        <h2>🚨 Recently Reported Cases - {{ now.Format "2006-01-02" }}</h2>
+        <div class="grid">
+            {{ $allCases := where .Site.AllPages "Kind" "page" }}
+            {{ $recentCases := where $allCases "Date" "!=" nil }}
+            {{ $recentCases = where $recentCases "Date" "gt" (now.AddDate 0 0 -30) }}
+            {{ $sortedRecentCases := slice }}
+            {{ $tempCases := $recentCases }}
+            {{ range seq 100 }}
+                {{ if eq (len $tempCases) 0 }}
+                    {{ break }}
+                {{ end }}
+                {{ $maxDate := time "2000-01-01" }}
+                {{ $maxCase := index $tempCases 0 }}
+                {{ range $case := $tempCases }}
+                    {{ if gt $case.Date $maxDate }}
+                        {{ $maxDate = $case.Date }}
+                        {{ $maxCase = $case }}
+                    {{ end }}
+                {{ end }}
+                {{ $sortedRecentCases = $sortedRecentCases | append $maxCase }}
+                {{ $newTempCases := slice }}
+                {{ range $case := $tempCases }}
+                    {{ if ne $case $maxCase }}
+                        {{ $newTempCases = $newTempCases | append $case }}
+                    {{ end }}
+                {{ end }}
+                {{ $tempCases = $newTempCases }}
+            {{ end }}
+            {{ range first 4 $sortedRecentCases }}
+            <a href="{{ .RelPermalink }}" class="card">
+                <span class="badge badge-text">🆕 Newly Added</span>
+                <h3 style="margin: 0 0 10px 0;">{{ .Title }}</h3>
+                <p style="color: #666; font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                    {{ .Summary | plainify | truncate 120 }}
+                </p>
+            </a>
+            {{ end }}
+        </div>
+
         <h2>📝 Deep Dive Reports</h2>
         <div class="grid">
             {{ $allPages := where .Site.AllPages "Kind" "page" }}

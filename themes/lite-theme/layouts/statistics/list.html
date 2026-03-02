@@ -1,0 +1,159 @@
+
+    <div style="max-width: 1000px; margin: 20px auto; font-family: sans-serif; padding: 0 20px;">
+        <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff; overflow-x: auto; white-space: nowrap;">
+            <a href="/" style="color: #fff; text-decoration: none;">Home 552</a>
+            <span style="margin: 0 8px; color: #666;">&raquo;</span>
+            <span style="color: #ff7675; font-weight: bold;">Statistics & Demographics</span>
+        </nav>
+
+        <h1 style="border-bottom: 4px solid #d63031; padding-bottom: 12px;">Statistics & Demographics</h1>
+        
+        <p style="margin-bottom: 40px; color: #666;">Comprehensive statistics on missing persons cases in our database.</p>
+        
+        <!-- Total Cases -->
+        <section style="margin-bottom: 50px;">
+            <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Total Cases</h2>
+            <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                <p style="font-size: 1.2rem; color: #666;">Total Missing Persons Cases: <span style="font-size: 2rem; font-weight: bold; color: #d63031;">{{ len .Site.RegularPages }}</span></p>
+            </div>
+        </section>
+        
+        <!-- Top 10 States with Most Cases -->
+        <section style="margin-bottom: 50px;">
+            <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Top 10 States with Most Cases</h2>
+            <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                    {{ $states := .Site.Home.Sections }}
+            {{ $sortedStates := sort $states "RegularPagesRecursive" "desc" }}
+            {{ $top10States := first 10 $sortedStates }}
+                    {{ range $index, $state := $top10States }}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee;">
+                        <span>{{ add $index 1 }}. {{ $state.Title }}</span>
+                        <span style="font-weight: bold; color: #d63031;">{{ len $state.RegularPagesRecursive }}</span>
+                    </div>
+                    {{ end }}
+                </div>
+            </div>
+        </section>
+        
+        <!-- Missing Types Distribution -->
+        <section style="margin-bottom: 50px;">
+            <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Missing Types Distribution</h2>
+            <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                    {{ $allCases := where .Site.AllPages "Kind" "page" }}
+                    {{ $classifications := slice }}
+                    {{ range $allCases }}
+                        {{ if .Params.metadata }}
+                            {{ if .Params.metadata.classification }}
+                                {{ $classification := .Params.metadata.classification }}
+                                {{ if not (in $classifications $classification) }}
+                                    {{ $classifications = $classifications | append $classification }}
+                                {{ end }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                    {{ range $classifications }}
+                        {{ $classification := . }}
+                        {{ $classCases := where $allCases "Params.metadata.classification" "==" $classification }}
+                        {{ if gt (len $classCases) 0 }}
+                        <div style="padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <h3 style="margin-top: 0; font-size: 1rem; color: #2d3436;">{{ $classification }}</h3>
+                            <p style="margin-bottom: 0; font-weight: bold; color: #d63031;">{{ len $classCases }} cases</p>
+                        </div>
+                        {{ end }}
+                    {{ end }}
+                </div>
+            </div>
+        </section>
+        
+        <!-- Race Distribution -->
+        <section style="margin-bottom: 50px;">
+            <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Race Distribution</h2>
+            <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                    {{ $allCases := where .Site.AllPages "Kind" "page" }}
+                    {{ $races := slice }}
+                    {{ range $allCases }}
+                        {{ if .Params.metadata }}
+                            {{ if .Params.metadata.race }}
+                                {{ $race := .Params.metadata.race }}
+                                {{ if not (in $races $race) }}
+                                    {{ $races = $races | append $race }}
+                                {{ end }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                    {{ range $races }}
+                        {{ $race := . }}
+                        {{ $raceCases := where $allCases "Params.metadata.race" "==" $race }}
+                        {{ if gt (len $raceCases) 0 }}
+                        <div style="padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <h3 style="margin-top: 0; font-size: 1rem; color: #2d3436;">{{ $race }}</h3>
+                            <p style="margin-bottom: 0; font-weight: bold; color: #d63031;">{{ len $raceCases }} cases</p>
+                        </div>
+                        {{ end }}
+                    {{ end }}
+                </div>
+            </div>
+        </section>
+        
+        <!-- Age Distribution -->
+        <section style="margin-bottom: 50px;">
+            <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Age Distribution</h2>
+            <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                    {{ $allCases := where .Site.AllPages "Kind" "page" }}
+                    {{ $ageGroups := dict "0-17" 0 "18-34" 0 "35-54" 0 "55-64" 0 "65+" 0 }}
+                    {{ range $allCases }}
+                        {{ if .Params.metadata }}
+                            {{ if .Params.metadata.age }}
+                                {{ $age := .Params.metadata.age }}
+                                {{ if lt $age 18 }}
+                                    {{ $ageGroups = merge $ageGroups (dict "0-17" (add (index $ageGroups "0-17") 1)) }}
+                                {{ else if and (ge $age 18) (lt $age 35) }}
+                                    {{ $ageGroups = merge $ageGroups (dict "18-34" (add (index $ageGroups "18-34") 1)) }}
+                                {{ else if and (ge $age 35) (lt $age 55) }}
+                                    {{ $ageGroups = merge $ageGroups (dict "35-54" (add (index $ageGroups "35-54") 1)) }}
+                                {{ else if and (ge $age 55) (lt $age 65) }}
+                                    {{ $ageGroups = merge $ageGroups (dict "55-64" (add (index $ageGroups "55-64") 1)) }}
+                                {{ else if ge $age 65 }}
+                                    {{ $ageGroups = merge $ageGroups (dict "65+" (add (index $ageGroups "65+") 1)) }}
+                                {{ end }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                    {{ range $ageGroup, $count := $ageGroups }}
+                        {{ if gt $count 0 }}
+                        <div style="padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                            <h3 style="margin-top: 0; font-size: 1rem; color: #2d3436;">{{ $ageGroup }} years</h3>
+                            <p style="margin-bottom: 0; font-weight: bold; color: #d63031;">{{ $count }} cases</p>
+                        </div>
+                        {{ end }}
+                    {{ end }}
+                </div>
+            </div>
+        </section>
+        
+        <footer style="margin-top: 60px; padding: 30px; background: #222; color: #fff; border-radius: 10px;">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <h3 style="margin-top: 0; margin-bottom: 20px;">XML Sitemap</h3>
+                <p style="margin-bottom: 20px;">For better SEO and indexing, you can access our XML sitemap files:</p>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 10px;">
+                        <a href="/sitemap.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                            Main Sitemap
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 10px;">
+                        <a href="/posts.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                            Posts Sitemap
+                        </a>
+                    </li>
+                </ul>
+                <p style="margin-top: 30px; font-size: 0.9rem; color: #888;">
+                    ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© {{ now.Format "2006" }} Missing Persons Database
+                </p>
+            </div>
+        </footer>
+    </div>

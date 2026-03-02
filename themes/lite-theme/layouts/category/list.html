@@ -1,0 +1,150 @@
+<div style="max-width: 1000px; margin: 20px auto; font-family: sans-serif; padding: 0 20px;">
+    <nav style="margin-bottom: 25px; font-size: 0.95rem; background: #222; padding: 12px 20px; border-radius: 6px; color: #fff; overflow-x: auto; white-space: nowrap;">
+        <a href="/" style="color: #fff; text-decoration: none;">Home 552</a>
+        <span style="margin: 0 8px; color: #666;">&raquo;</span>
+        <span style="color: #ff7675; font-weight: bold;">Missing Persons by Category</span>
+    </nav>
+
+    <h1 style="border-bottom: 4px solid #d63031; padding-bottom: 12px;">Missing Persons by Category</h1>
+    
+    {{ $allCases := where .Site.AllPages "Kind" "page" }}
+    
+    <!-- Silver Alerts -->
+    {{ $silverAlerts := where $allCases "Params.metadata.age" "!=" nil }}
+    {{ $silverAlerts = where $silverAlerts "Params.metadata.age" "ge" 65 }}
+    {{ if gt (len $silverAlerts) 0 }}
+    <section style="margin: 40px 0;">
+        <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Silver Alerts (Senior citizens 65+) - {{ len $silverAlerts }} cases</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            {{ range $silverAlerts }}
+            <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                {{ with index .Params.images 0 }}
+                <img src="{{ . }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {{ end }}
+                <div style="padding: 15px;">
+                    <div style="font-weight: bold; font-size: 1rem; margin-bottom: 8px;">{{ .Title }}</div>
+                    <div style="font-size: 0.85rem; color: #666; display: flex; justify-content: space-between;">
+                        {{ with .Params.metadata.missing_since }}
+                        <span>Missing since: {{ . }}</span>
+                        {{ end }}
+                        {{ with .Params.metadata.city }}
+                        <span>{{ . }}</span>
+                        {{ end }}
+                    </div>
+                </div>
+            </a>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+    
+    <!-- Amber Alerts / Juveniles -->
+    {{ $juveniles := where $allCases "Params.metadata.age" "!=" nil }}
+    {{ $juveniles = where $juveniles "Params.metadata.age" "lt" 18 }}
+    {{ if gt (len $juveniles) 0 }}
+    <section style="margin: 40px 0;">
+        <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Amber Alerts / Juveniles (Minors under 18) - {{ len $juveniles }} cases</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            {{ range $juveniles }}
+            <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                {{ with index .Params.images 0 }}
+                <img src="{{ . }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {{ end }}
+                <div style="padding: 15px;">
+                    <div style="font-weight: bold; font-size: 1rem; margin-bottom: 8px;">{{ .Title }}</div>
+                    <div style="font-size: 0.85rem; color: #666; display: flex; justify-content: space-between;">
+                        {{ with .Params.metadata.missing_since }}
+                        <span>Missing since: {{ . }}</span>
+                        {{ end }}
+                        {{ with .Params.metadata.city }}
+                        <span>{{ . }}</span>
+                        {{ end }}
+                    </div>
+                </div>
+            </a>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+    
+    <!-- Cold Cases -->
+    {{ $coldCases := where $allCases "Params.metadata.missing_since" "!=" nil }}
+        {{ $oneYearAgo := now.AddDate (-1) 0 0 }}
+        {{ $oneYearAgoFormatted := $oneYearAgo.Format "2006-01-02" }}
+        {{ $coldCases = where $coldCases "Params.metadata.missing_since" "lt" $oneYearAgoFormatted }}
+    {{ if gt (len $coldCases) 0 }}
+    <section style="margin: 40px 0;">
+        <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Cold Cases (Missing for over 1 year) - {{ len $coldCases }} cases</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            {{ range $coldCases }}
+            <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                {{ with index .Params.images 0 }}
+                <img src="{{ . }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {{ end }}
+                <div style="padding: 15px;">
+                    <div style="font-weight: bold; font-size: 1rem; margin-bottom: 8px;">{{ .Title }}</div>
+                    <div style="font-size: 0.85rem; color: #666; display: flex; justify-content: space-between;">
+                        {{ with .Params.metadata.missing_since }}
+                        <span>Missing since: {{ . }}</span>
+                        {{ end }}
+                        {{ with .Params.metadata.city }}
+                        <span>{{ . }}</span>
+                        {{ end }}
+                    </div>
+                </div>
+            </a>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+    
+    <!-- Unidentified Remains -->
+    {{ $unidentified := where $allCases "Params.metadata.classification" "==" "Unidentified Remains" }}
+    {{ if gt (len $unidentified) 0 }}
+    <section style="margin: 40px 0;">
+        <h2 style="color: #2d3436; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Unidentified Remains - {{ len $unidentified }} cases</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            {{ range $unidentified }}
+            <a href="{{ .RelPermalink }}" style="text-decoration: none; color: inherit; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                {{ with index .Params.images 0 }}
+                <img src="{{ . }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {{ end }}
+                <div style="padding: 15px;">
+                    <div style="font-weight: bold; font-size: 1rem; margin-bottom: 8px;">{{ .Title }}</div>
+                    <div style="font-size: 0.85rem; color: #666; display: flex; justify-content: space-between;">
+                        {{ with .Params.metadata.missing_since }}
+                        <span>Missing since: {{ . }}</span>
+                        {{ end }}
+                        {{ with .Params.metadata.city }}
+                        <span>{{ . }}</span>
+                        {{ end }}
+                    </div>
+                </div>
+            </a>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+    
+    <footer style="margin-top: 60px; padding: 30px; background: #222; color: #fff; border-radius: 10px;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h3 style="margin-top: 0; margin-bottom: 20px;">XML Sitemap</h3>
+            <p style="margin-bottom: 20px;">For better SEO and indexing, you can access our XML sitemap files:</p>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 10px;">
+                    <a href="/sitemap.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                        Main Sitemap
+                    </a>
+                </li>
+                <li style="margin-bottom: 10px;">
+                    <a href="/posts.xml" style="color: #fff; text-decoration: none; border-bottom: 1px solid #444;">
+                        Posts Sitemap
+                    </a>
+                </li>
+            </ul>
+            <p style="margin-top: 30px; font-size: 0.9rem; color: #888;">
+                © {{ now.Format "2006" }} Missing Persons Database
+            </p>
+        </div>
+    </footer>
+</div>
